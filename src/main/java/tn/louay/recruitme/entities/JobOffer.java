@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.*;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Data

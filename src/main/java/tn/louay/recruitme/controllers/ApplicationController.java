@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import tn.louay.recruitme.entities.Application;
+import tn.louay.recruitme.enums.ApplicationStatus;
 import tn.louay.recruitme.services.ApplicationService;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -32,7 +33,7 @@ public class ApplicationController {
     @PostMapping
     public Application createApplication(@RequestBody Application application) {
 
-        System.out.println(application.getName());
+        application.setStatus(ApplicationStatus.pending);
 
         return applicationService.createApplication(application);
     }

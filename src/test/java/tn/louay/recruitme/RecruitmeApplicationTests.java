@@ -28,7 +28,7 @@ class RecruitmeApplicationTests {
 				"testName",
 				"testEmail",
 				"testResume",
-				"testCoverLetter",
+				"someUrl",
 				new JobOffer(1, "", "", "", "", new Date()));
 
 		System.out.println(applicationService.createApplication(application));

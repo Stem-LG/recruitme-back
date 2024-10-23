@@ -17,6 +17,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         return applicationRepository.findByJobOfferId(jobOfferId);
     }
 
+    public List<Application> getApplicationsByJobOfferIdAndName(int jobOfferId, String name) {
+        return applicationRepository.findByJobOfferIdAndName(jobOfferId, name);
+    }
+
     public Application getApplication(int id) {
         return applicationRepository.findById(id).get();
     }

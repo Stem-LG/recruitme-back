@@ -14,8 +14,20 @@ public class JobOfferServiceImpl implements JobOfferService {
     @Autowired
     private JobOfferRepository jobOfferRepository;
 
+    public List<JobOffer> getAllJobOffers() {
+        return jobOfferRepository.findAll();
+    }
+
+    public List<JobOffer> getJobOfferByTitle(String title) {
+        return jobOfferRepository.findByTitle(title);
+    }
+
     public List<JobOffer> getJobOfferBySkill(String skill) {
         return jobOfferRepository.findBySkill(skill);
+    }
+
+    public List<JobOffer> getJobOfferByCompany(String company) {
+        return jobOfferRepository.findByCompany(company);
     }
 
 }

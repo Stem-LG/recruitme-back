@@ -13,7 +13,13 @@ import tn.louay.recruitme.entities.JobOffer;
 @CrossOrigin
 public interface JobOfferRepository extends JpaRepository<JobOffer, Integer> {
 
+    @Query("SELECT j FROM JobOffer j WHERE j.title LIKE %?1%")
+    List<JobOffer> findByTitle(String title);
+
     @Query("SELECT j FROM JobOffer j WHERE j.skills LIKE %?1%")
-    public List<JobOffer> findBySkill(String skill);
+    List<JobOffer> findBySkill(String skill);
+
+    @Query("SELECT j FROM JobOffer j WHERE j.Company LIKE %?1%")
+    List<JobOffer> findByCompany(String company);
 
 }

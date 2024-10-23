@@ -3,6 +3,7 @@ package tn.louay.recruitme.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,8 +22,24 @@ public class JobOfferController {
     private JobOfferService jobOfferService;
 
     @GetMapping("search/")
-    public List<JobOffer> getJobOffersBySkill(@RequestParam String skill) {
-        return jobOfferService.getJobOfferBySkill(skill);
+    public List<JobOffer> getJobOffersFromQuery(
+            @RequestParam @Nullable String skill,
+            @RequestParam @Nullable String title,
+            @RequestParam @Nullable String company) {
+
+        if (skill != null) {
+            return jobOfferService.getJobOfferBySkill(skill);
+        }
+
+        if (title != null) {
+            return jobOfferService.getJobOfferByTitle(title);
+        }
+
+        if (company != null) {
+            return jobOfferService.getJobOfferByCompany(company);
+        }
+
+        return jobOfferService.getAllJobOffers();
     }
 
 }

@@ -15,37 +15,82 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/application")
 @CrossOrigin
 public class ApplicationController {
-    @Autowired
+    @Autowired 
     private ApplicationService applicationService;
 
-    // get all applications is never needed
-
-    @GetMapping("/{applicationId}")
-    public Application getApplication(@PathVariable int applicationId) {
-        return applicationService.getApplication(applicationId);
-    }
-
     @PostMapping
-    public Application createApplication(@RequestBody Application application) {
+    public ResponseEntity<Application> createApplication(@RequestBody Application application) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
+        int userId = (int) claims.get("id");
 
+        application.setCreatedBy(userId);
         application.setStatus(ApplicationStatus.pending);
 
-        return applicationService.createApplication(application);
+        return ResponseEntity.ok(applicationService.createApplication(application));
     }
 
-    @PutMapping
-    public Application updateApplication(@RequestBody Application application) {
-        return applicationService.updateApplication(application);
+    @PutMapping("/{applicationId}/status")
+    public ResponseEntity<Application> updateApplicationStatus(
+            @PathVariable int applicationId,
+            @RequestParam ApplicationStatus status) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
+        int recruiterId = (int) claims.get("id");
+
+        
+
+        Application application = applicationService.getApplication(applicationId);
+        if (application.getJobOffer().getCreatedBy() != recruiterId) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        application.setStatus(status);
+        return ResponseEntity.ok(applicationService.updateApplication(application));
+    }
+
+    @GetMapping("/{applicationId}")  
+    public ResponseEntity<Application> getApplication(@PathVariable int applicationId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
+        int recruiterId = (int) claims.get("id");
+
+        Application application = applicationService.getApplication(applicationId);
+        if (application.getJobOffer().getCreatedBy() != recruiterId) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(application);
     }
 
     @DeleteMapping("/{applicationId}")
-    public void deleteApplication(@PathVariable int applicationId) {
-        applicationService.deleteApplication(applicationId);
-    }
+    public ResponseEntity<Void> deleteApplication(@PathVariable int applicationId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
+        int recruiterId = (int) claims.get("id");
 
+        Application application = applicationService.getApplication(applicationId);
+        if (application.getJobOffer().getCreatedBy() != recruiterId) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        applicationService.deleteApplication(applicationId);
+        return ResponseEntity.ok().build();
+    }
 }

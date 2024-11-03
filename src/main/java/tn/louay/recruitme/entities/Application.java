@@ -24,6 +24,8 @@ public class Application {
 
     private String resumeUrl;
 
+    private int createdBy;
+
     @CreationTimestamp
     private Date createdAt;
 

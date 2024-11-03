@@ -29,7 +29,7 @@ class RecruitmeApplicationTests {
 				"testEmail",
 				"testResume",
 				"someUrl",
-				new JobOffer(1, "", "", "", "", new Date()));
+				new JobOffer(1, "", "", "", "", 1, new Date()));
 
 		System.out.println(applicationService.createApplication(application));
 	}

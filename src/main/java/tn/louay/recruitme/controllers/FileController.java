@@ -6,6 +6,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,8 @@ import tn.louay.recruitme.dto.uploadFileResponseDTO;
 import tn.louay.recruitme.entities.DBFile;
 import tn.louay.recruitme.services.DBFileStorageService;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/file")
 @CrossOrigin
@@ -30,7 +34,14 @@ public class FileController {
 
     @PostMapping
     public uploadFileResponseDTO uploadFile(@RequestParam("file") MultipartFile file) {
-        DBFile dbFile = dbFileStorageService.storeFile(file);
+        // Get current user ID from JWT token
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
+        int userId = (int) claims.get("id");
+
+        // Store file with user ID
+        DBFile dbFile = dbFileStorageService.storeFile(file, userId);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/file/")

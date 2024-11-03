@@ -26,13 +26,13 @@ public class DBFile {
     @Lob
     private byte[] data;
 
-    public DBFile(String fileName, String fileType, byte[] data) {
+    private int createdBy;
+
+    public DBFile(String fileName, String fileType, byte[] data, int createdBy) {
         this.fileName = fileName;
         this.fileType = fileType;
         this.data = data;
+        this.createdBy = createdBy;
     }
 
 }
-
-// source
-// https://www.callicoder.com/spring-boot-file-upload-download-jpa-hibernate-mysql-database-example/

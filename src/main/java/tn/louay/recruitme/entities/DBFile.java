@@ -1,5 +1,8 @@
 package tn.louay.recruitme.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,9 +26,12 @@ public class DBFile {
 
     private String fileType;
 
+    @JsonIgnore
     @Lob
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] data;
 
+    @JsonIgnore
     private int createdBy;
 
     public DBFile(String fileName, String fileType, byte[] data, int createdBy) {

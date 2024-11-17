@@ -17,12 +17,14 @@ public class JobOfferEventHandler {
 
     @HandleBeforeCreate
     public void handleBeforeCreate(JobOffer jobOffer) {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         @SuppressWarnings("unchecked")
         Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
         int userId = (int) claims.get("id");
 
         jobOffer.setCreatedBy(userId);
+
     }
 
     @HandleBeforeSave

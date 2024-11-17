@@ -25,15 +25,19 @@ public class JobOffer {
     private String company;
     private int createdBy;
 
+    private List<String> images;
+
     @CreationTimestamp
     private Date createdAt;
 
-    public JobOffer(String title, String description, String skills, int createdBy, String company) {
+    public JobOffer(String title, String description, String skills, String company, int createdBy,
+            List<String> images) {
         this.title = title;
         this.description = description;
         this.skills = skills;
         this.company = company;
         this.createdBy = createdBy;
+        this.images = images;
         this.createdAt = new Date();
     }
 

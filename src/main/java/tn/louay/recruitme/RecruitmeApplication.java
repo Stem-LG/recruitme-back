@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 
 import tn.louay.recruitme.entities.Application;
+import tn.louay.recruitme.entities.DBFile;
 import tn.louay.recruitme.entities.JobOffer;
 
 @SpringBootApplication
@@ -23,6 +24,7 @@ public class RecruitmeApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		repositoryRestConfiguration.exposeIdsFor(JobOffer.class);
 		repositoryRestConfiguration.exposeIdsFor(Application.class);
+		repositoryRestConfiguration.exposeIdsFor(DBFile.class);
 	}
 
 }

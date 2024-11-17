@@ -22,7 +22,8 @@ public class Application {
     private String email;
     private String motivation;
 
-    private String resumeUrl;
+    @OneToOne
+    private DBFile resumeFile;
 
     private int createdBy;
 
@@ -35,12 +36,12 @@ public class Application {
     @ManyToOne
     private JobOffer jobOffer;
 
-    public Application(String name, String email, String motivation, String resumeUrl,
+    public Application(String name, String email, String motivation, DBFile resumeFile,
             JobOffer jobOffer) {
         this.name = name;
         this.email = email;
         this.motivation = motivation;
-        this.resumeUrl = resumeUrl;
+        this.resumeFile = resumeFile;
         this.createdAt = new Date();
         this.status = ApplicationStatus.pending;
         this.jobOffer = jobOffer;

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import tn.louay.recruitme.dto.uploadFileResponseDTO;
 import tn.louay.recruitme.entities.DBFile;
@@ -43,19 +42,12 @@ public class FileController {
         // Store file with user ID
         DBFile dbFile = dbFileStorageService.storeFile(file, userId);
 
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/file/")
-                .path(dbFile.getId().toString())
-                .toUriString();
-
-        return new uploadFileResponseDTO(dbFile.getFileName(), fileDownloadUri,
-                file.getContentType(), file.getSize());
+        return new uploadFileResponseDTO(dbFile.getId(), dbFile.getFileName(), dbFile.getFileType(),
+                dbFile.getData().length);
     }
 
     @GetMapping("/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable int fileId) {
-
-        System.out.println("fileId: " + fileId);
 
         // Load file from database
         DBFile dbFile = dbFileStorageService.getFile(fileId);

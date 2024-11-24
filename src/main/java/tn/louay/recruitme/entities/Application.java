@@ -25,7 +25,7 @@ public class Application {
     @OneToOne
     private DBFile resumeFile;
 
-    private int createdBy;
+    private String createdBy;
 
     @CreationTimestamp
     private Date createdAt;
@@ -36,7 +36,7 @@ public class Application {
     @ManyToOne
     private JobOffer jobOffer;
 
-    public Application(String name, String email, String motivation, DBFile resumeFile,
+    public Application(String name, String email, String motivation, DBFile resumeFile, String createdBy,
             JobOffer jobOffer) {
         this.name = name;
         this.email = email;

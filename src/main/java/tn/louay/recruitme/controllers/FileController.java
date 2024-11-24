@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import tn.louay.recruitme.dto.uploadFileResponseDTO;
 import tn.louay.recruitme.entities.DBFile;
 import tn.louay.recruitme.services.DBFileStorageService;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/file")
@@ -33,14 +33,9 @@ public class FileController {
 
     @PostMapping
     public uploadFileResponseDTO uploadFile(@RequestParam("file") MultipartFile file) {
-        // Get current user ID from JWT token
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
-        int userId = (int) claims.get("id");
 
         // Store file with user ID
-        DBFile dbFile = dbFileStorageService.storeFile(file, userId);
+        DBFile dbFile = dbFileStorageService.storeFile(file, getUserId());
 
         return new uploadFileResponseDTO(dbFile.getId(), dbFile.getFileName(), dbFile.getFileType(),
                 dbFile.getData().length);
@@ -48,16 +43,19 @@ public class FileController {
 
     @GetMapping("/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable int fileId) {
-
         // Load file from database
         DBFile dbFile = dbFileStorageService.getFile(fileId);
-
-        System.out.println("dbFile: " + dbFile.getFileName());
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(dbFile.getFileType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dbFile.getFileName() + "\"")
                 .body(new ByteArrayResource(dbFile.getData()));
+    }
+
+    private String getUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+        return jwt.getSubject();
     }
 
 }

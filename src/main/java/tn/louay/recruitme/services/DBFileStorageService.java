@@ -16,7 +16,7 @@ public class DBFileStorageService {
     @Autowired
     private DBFileRepository dbFileRepository;
 
-    public DBFile storeFile(MultipartFile file, int userId) {
+    public DBFile storeFile(MultipartFile file, String userId) {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         try {

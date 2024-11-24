@@ -18,26 +18,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/application")
 @CrossOrigin
 public class ApplicationController {
-    @Autowired 
+    @Autowired
     private ApplicationService applicationService;
 
     @PostMapping
     public ResponseEntity<Application> createApplication(@RequestBody Application application) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
-        int userId = (int) claims.get("id");
 
-        application.setCreatedBy(userId);
+        application.setCreatedBy(getUserId());
         application.setStatus(ApplicationStatus.pending);
 
         return ResponseEntity.ok(applicationService.createApplication(application));
@@ -47,15 +43,9 @@ public class ApplicationController {
     public ResponseEntity<Application> updateApplicationStatus(
             @PathVariable int applicationId,
             @RequestParam ApplicationStatus status) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
-        int recruiterId = (int) claims.get("id");
-
-        
 
         Application application = applicationService.getApplication(applicationId);
-        if (application.getJobOffer().getCreatedBy() != recruiterId) {
+        if (!application.getJobOffer().getCreatedBy().equals(getUserId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -63,15 +53,11 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.updateApplication(application));
     }
 
-    @GetMapping("/{applicationId}")  
+    @GetMapping("/{applicationId}")
     public ResponseEntity<Application> getApplication(@PathVariable int applicationId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
-        int recruiterId = (int) claims.get("id");
 
         Application application = applicationService.getApplication(applicationId);
-        if (application.getJobOffer().getCreatedBy() != recruiterId) {
+        if (!application.getJobOffer().getCreatedBy().equals(getUserId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -80,17 +66,19 @@ public class ApplicationController {
 
     @DeleteMapping("/{applicationId}")
     public ResponseEntity<Void> deleteApplication(@PathVariable int applicationId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
-        int recruiterId = (int) claims.get("id");
 
         Application application = applicationService.getApplication(applicationId);
-        if (application.getJobOffer().getCreatedBy() != recruiterId) {
+        if (!application.getJobOffer().getCreatedBy().equals(getUserId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         applicationService.deleteApplication(applicationId);
         return ResponseEntity.ok().build();
+    }
+
+    private String getUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+        return jwt.getSubject();
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.data.repository.query.Param;
 
 import tn.louay.recruitme.entities.JobOffer;
+
 @RepositoryRestResource(path = "offers")
 @CrossOrigin
 public interface JobOfferRepository extends JpaRepository<JobOffer, Integer> {
@@ -27,21 +28,21 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Integer> {
 
         @RestResource(path = "byRecruiter")
         @Query("SELECT j FROM JobOffer j WHERE j.createdBy = :recruiterId")
-        Page<JobOffer> findByRecruiter(@Param("recruiterId") Integer recruiterId, Pageable pageable);
+        Page<JobOffer> findByRecruiter(@Param("recruiterId") String recruiterId, Pageable pageable);
 
         @RestResource(path = "byRecruiterAndTitle")
         @Query("SELECT j FROM JobOffer j WHERE j.createdBy = :recruiterId AND j.title LIKE %:title%")
-        Page<JobOffer> findByRecruiterAndTitle(@Param("recruiterId") Integer recruiterId, @Param("title") String title,
+        Page<JobOffer> findByRecruiterAndTitle(@Param("recruiterId") String recruiterId, @Param("title") String title,
                         Pageable pageable);
 
         @RestResource(path = "byRecruiterAndSkill")
         @Query("SELECT j FROM JobOffer j WHERE j.createdBy = :recruiterId AND j.skills LIKE %:skill%")
-        Page<JobOffer> findByRecruiterAndSkill(@Param("recruiterId") Integer recruiterId, @Param("skill") String skill,
+        Page<JobOffer> findByRecruiterAndSkill(@Param("recruiterId") String recruiterId, @Param("skill") String skill,
                         Pageable pageable);
 
         @RestResource(path = "byRecruiterAndCompany")
         @Query("SELECT j FROM JobOffer j WHERE j.createdBy = :recruiterId AND j.company LIKE %:company%")
-        Page<JobOffer> findByRecruiterAndCompany(@Param("recruiterId") Integer recruiterId,
+        Page<JobOffer> findByRecruiterAndCompany(@Param("recruiterId") String recruiterId,
                         @Param("company") String company, Pageable pageable);
 
 }

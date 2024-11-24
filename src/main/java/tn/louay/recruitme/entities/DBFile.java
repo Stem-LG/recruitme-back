@@ -32,9 +32,9 @@ public class DBFile {
     private byte[] data;
 
     @JsonIgnore
-    private int createdBy;
+    private String createdBy;
 
-    public DBFile(String fileName, String fileType, byte[] data, int createdBy) {
+    public DBFile(String fileName, String fileType, byte[] data, String createdBy) {
         this.fileName = fileName;
         this.fileType = fileType;
         this.data = data;

@@ -6,10 +6,11 @@ import org.springframework.data.rest.core.annotation.HandleBeforeDelete;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
 import tn.louay.recruitme.entities.JobOffer;
-import java.util.Map;
 
 @Component
 @RepositoryEventHandler(JobOffer.class)
@@ -18,25 +19,23 @@ public class JobOfferEventHandler {
     @HandleBeforeCreate
     public void handleBeforeCreate(JobOffer jobOffer) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
-        int userId = (int) claims.get("id");
-
-        jobOffer.setCreatedBy(userId);
+        jobOffer.setCreatedBy(getUserId());
 
     }
 
     @HandleBeforeSave
     @HandleBeforeDelete
     public void handleBeforeWriteOperation(JobOffer jobOffer) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> claims = (Map<String, Object>) authentication.getDetails();
-        int userId = (int) claims.get("id");
 
-        if (jobOffer.getCreatedBy() != userId) {
+        if (!jobOffer.getCreatedBy().equals(getUserId())) {
             throw new RuntimeException("Not authorized to modify this job offer");
         }
+
+    }
+
+    private String getUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+        return jwt.getSubject();
     }
 }
